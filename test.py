@@ -16,18 +16,11 @@ def main():
     parser.add_argument(
         "--config_file", default="", help="path to config file", type=str
     )
-    # parser.add_argument("opts", help="Modify config options using the command-line", default=None,
-    #                     nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
 
     num_gpus = int(os.environ["WORLD_SIZE"]
                    ) if "WORLD_SIZE" in os.environ else 1
-
-    # if args.config_file != "":
-    #     config.merge_from_file(args.config_file)
-    # config.merge_from_list(args.opts)
-    # config.freeze()
 
     config_path = os.path.join('configs', f'{args.config_file}.yaml')
     config = Config(config_path)
