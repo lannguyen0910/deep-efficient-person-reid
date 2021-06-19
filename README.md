@@ -25,6 +25,10 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 ├
 ├── datasets                # data loader
 │   └── ...           
+├
+├── market1501              # market-1501 dataset
+|
+├── cuhk03_release          # cuhk03 dataset
 |
 ├── samplers                # random samplers
 │   └── ...
@@ -63,61 +67,63 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 Notebook to train, inference and visualize: [link](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
 
 ## **Setup**
-1. **Install dependencies, change directory to source: **
+1. **Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
+
+2. **Install dependencies, change directory to source: **
 
 ```
 pip install requirements.txt
 cd source
 ```
 
-2. Modify config files in **/configs/**. You can play with the parameters for better training, testing.
+3. Modify config files in **/configs/**. You can play with the parameters for better training, testing.
 
-3. **Training:**
+4. **Training:**
 
 ```
 python train.py
 ```
 
-4. **Testing:**
+5. **Testing:**
 Save in **/loggers/runs**, for example the testing result from EfficientNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1CPTzKS5tUu8fbDwwbA6E9xtXjtiKw_Lk?usp=sharing)
 ```
 python test.py
 ```
 
-5. **Visualization**
+6. **Visualization**
 Save in **/loggers/runs/results/**, for example the visualize result from EfficienNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1-4VRRCPlKk75nP1RVhI5itfrLbNZlPdR?usp=sharing)
 ```
 python visualize.py
 ```
 
+<h2>**Examples**</h2>
+
 ---
 
-<div align="center">
-<p>Query image</p>
+<p>**Query image 2**</p>
 ![query](assets/queries/1498.jpg)
-</div>
+
 
 ---
 
-<div align="center">
-<p>Result image</p>
+
+<p>**Result image 2**</p>
 ![result](assets/results/1498-cammixed.png)
-</div>
+
 
 
 ---
 
-<div align="center">
-<p>Query image</p>
+
+<p>**Query image 2**</p>
 ![query](assets/queries/1491.jpg)
-</div>
+
 
 ---
 
-<div align="center">
-<p>Result image</p>
+
+<p>**Result image 2**</p>
 ![result](assets/results/1491-cammixed.png)
-</div>
 
 ## **Results**
 
@@ -149,7 +155,7 @@ python visualize.py
 
 ---
 
-The results from EfficientNet-v2 models might be better if fine-tuning properly, while here we use the best parameters for the ResNet models (on Market-1501 dataset) from [this](https://arxiv.org/pdf/2104.13643.pdf) paper
+The results from EfficientNet-v2 models might be better if fine-tuning properly and longer training epochs, while here we use the best parameters for the ResNet models (on Market-1501 dataset) from [this](https://arxiv.org/pdf/2104.13643.pdf) paper and only trained for 60 - 100 epochs.
 
 ## **Citation**
 
@@ -181,5 +187,5 @@ year = {2019}
 }
 ```
 
-Adapted from: [link](https://github.com/michuanhaohao/reid-strong-baseline)
+Adapted from: [michuanhaohao](https://github.com/michuanhaohao/reid-strong-baseline)
 
