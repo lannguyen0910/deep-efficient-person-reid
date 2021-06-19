@@ -3,8 +3,12 @@ Experiment for an uni project with strong baseline for Efficientnet-v2
 
 We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using pretrained models. Also **Resnet50-IBN-A** and **Efficientnet-v2** using pretrained on **ImageNet**. We used two datasets: **Market-1501** and **CUHK03**.
 
+<br/>
+
 ## **Pipeline**
 ![pipeline](assets/pipeline/pipeline.png)
+
+<br/>
 
 ## **Implementation Details**
 1. Random Erasing to transform input images.
@@ -16,6 +20,8 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 - (3) Centroid Loss - Center Loss for reducing the distance of embeddings to its class center. When combining it with Classification Loss, it helps preventing embeddings from collapsing.
 5. The default optimizer is AMSgrad with base learning rate of 3.5e<sup>-4</sup> and multistep learning rate scheduler, decayed at epoch 30<sup>th</sup> and epoch 55<sup>th</sup>. Besides, we also apply mixed precision in training. 
 6. In both datasets, pretrained models were trained for 60 epochs and non-pretrained models were trained for 100 epochs.
+
+<br/>
 
 ## **Source Structure**
 ```
@@ -58,6 +64,8 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 |
 ├── visualize.py            # visualize results 
 ```
+
+<br/>
 
 ## **Pretrained Models (on ImageNet)**
 - EfficientNet-v2: [link](https://drive.google.com/file/d/1rTYuStYA64U1qb7uC-h8DOhv99Ztxaxz/view?usp=sharing)
