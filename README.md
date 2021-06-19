@@ -63,8 +63,13 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 - EfficientNet-v2: [link](https://drive.google.com/file/d/1rTYuStYA64U1qb7uC-h8DOhv99Ztxaxz/view?usp=sharing)
 - Resnet50-IBN-A: [link](https://drive.google.com/file/d/162_RPNfOguXy21nrYZZSvEtex9ombYtq/view?usp=sharing)
 
+<br/>
+
 ## **Notebook**
-- Notebook to train, inference and visualize: [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)][colab](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
+- Notebook to train, inference and visualize: [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
+
+
+<br/>
 
 ## **Setup**
 - **Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
@@ -109,7 +114,9 @@ python visualize.py --config_file=name_of_config_file
 Ex: python visualize.py --config_file=efficientnetv2_market
 ```
 
-**Examples**
+<br/>
+
+## **Examples**
 
 ---
 
@@ -130,6 +137,8 @@ Ex: python visualize.py --config_file=efficientnetv2_market
 
 **Result image 2**
 ![result2](assets/results/1491-cammixed.png)
+
+<br/>
 
 ## **Results**
 
@@ -161,6 +170,8 @@ Ex: python visualize.py --config_file=efficientnetv2_market
 ---
 
 The results from EfficientNet-v2 models might be better if fine-tuning properly and longer training epochs, while here we use the best parameters for the ResNet models (on Market-1501 dataset) from [this](https://arxiv.org/pdf/2104.13643.pdf) paper and only trained for 60 - 100 epochs.
+
+<br/>
 
 ## **Citation**
 
