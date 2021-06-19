@@ -64,14 +64,14 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 - Resnet50-IBN-A: [link](https://drive.google.com/file/d/162_RPNfOguXy21nrYZZSvEtex9ombYtq/view?usp=sharing)
 
 ## **Notebook**
-Notebook to train, inference and visualize: [link](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
+Notebook to train, inference and visualize: [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)][colab](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
 
 ## **Setup**
-1. **Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
+**Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
 
 <br/>
 
-2. **Install dependencies, change directory to source**:
+**Install dependencies, change directory to source**:
 
 ```
 pip install requirements.txt
@@ -80,30 +80,33 @@ cd source
 
 <br/>
 
-3. Modify config files in **/configs/**. You can play with the parameters for better training, testing.
+Modify config files in **/configs/**. You can play with the parameters for better training, testing.
 
 <br/>
 
-4. **Training:**
+**Training:**
 
 ```
-python train.py
+python train.py --config_file=name_of_config_file
+Ex: python train.py --config_file=efficientnetv2_market
 ```
 
 <br />
 
-5. **Testing:**
+**Testing:**
 Save in **/loggers/runs**, for example the testing result from EfficientNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1CPTzKS5tUu8fbDwwbA6E9xtXjtiKw_Lk?usp=sharing)
 ```
-python test.py
+python test.py --config_file=name_of_config_file
+Ex: python test.py --config_file=efficientnetv2_market
 ```
 
 <br/>
 
-6. **Visualization**
+**Visualization**
 Save in **/loggers/runs/results/**, for example the visualize result from EfficienNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1-4VRRCPlKk75nP1RVhI5itfrLbNZlPdR?usp=sharing)
 ```
-python visualize.py
+python visualize.py --config_file=name_of_config_file
+Ex: python visualize.py --config_file=efficientnetv2_market
 ```
 
 **Examples**
@@ -131,7 +134,7 @@ python visualize.py
 ## **Results**
 
 - **Market-1501**
-```
+
 | Models                           |  mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
 | -------------------------------- | :---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
 | Resnet50 (non-pretrained)        | 51.8  |  74.0  |  88.2  |  93.0   | [link](https://drive.google.com/drive/folders/10_2UN6bWlwFhBUYI5W4lX42WD9SXqc13?usp=sharing) |
@@ -140,12 +143,12 @@ python visualize.py
 | EfficientNet-v2                  | 69.7  |  87.1  |  95.3  |  97.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
 | Resnet50-IBN-A + Re-ranking      | 89.8  |  92.1  |  96.5  |  97.7   | [link](https://drive.google.com/drive/folders/1hK5J_dugnNpVDGOwyjtAlC2e9FI49IUF?usp=sharing) |
 | EfficientNet-v2 + Re-ranking     | 85.6  |  89.9  |  94.7  |  96.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
-```
+
 
 ---
 
 - **CUHK03**:
-```
+
 | Models                           |  mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
 | -------------------------------- | :---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
 | Resnet50 (non-pretrained)        |  ...  |  ...   |  ...   |   ...   |                                             ...                                              |
@@ -154,7 +157,6 @@ python visualize.py
 | EfficientNet-v2                  | 40.6  |  42.9  |  63.1  |  72.5   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
 | Resnet50-IBN-A + Re-ranking      | 55.6  |  51.2  |  64.0  |  72.0   | [link](https://drive.google.com/drive/folders/1sXEDH1unesIv88Xoop-g1HjhTOmJTuXt?usp=sharing) |
 | EfficientNet-v2 + Re-ranking     | 56.0  |  51.4  |  64.7  |  73.4   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
-```
 
 ---
 
