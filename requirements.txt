@@ -1,0 +1,12 @@
+scipy==1.2.0
+pytorch-ignite==0.1.2
+PyYAML
+albumentations
+h5py
+tensorboard
+opencv-python
+numpy
+pandas
+torch
+Pillow
+apex
