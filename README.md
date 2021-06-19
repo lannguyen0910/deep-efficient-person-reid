@@ -69,14 +69,20 @@ Notebook to train, inference and visualize: [link](https://colab.research.google
 ## **Setup**
 1. **Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
 
-2. **Install dependencies, change directory to source: **
+<br/>
+
+2. **Install dependencies, change directory to source**:
 
 ```
 pip install requirements.txt
 cd source
 ```
 
+<br/>
+
 3. Modify config files in **/configs/**. You can play with the parameters for better training, testing.
+
+<br/>
 
 4. **Training:**
 
@@ -84,11 +90,15 @@ cd source
 python train.py
 ```
 
+<br />
+
 5. **Testing:**
 Save in **/loggers/runs**, for example the testing result from EfficientNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1CPTzKS5tUu8fbDwwbA6E9xtXjtiKw_Lk?usp=sharing)
 ```
 python test.py
 ```
+
+<br/>
 
 6. **Visualization**
 Save in **/loggers/runs/results/**, for example the visualize result from EfficienNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1-4VRRCPlKk75nP1RVhI5itfrLbNZlPdR?usp=sharing)
@@ -96,34 +106,27 @@ Save in **/loggers/runs/results/**, for example the visualize result from Effici
 python visualize.py
 ```
 
-<h2>**Examples**</h2>
+**Examples**
 
 ---
 
-<p>**Query image 2**</p>
-![query](assets/queries/1498.jpg)
-
-
----
-
-
-<p>**Result image 2**</p>
-![result](assets/results/1498-cammixed.png)
-
-
+**Query image 1**
+![query1](assets/queries/1498.jpg)
 
 ---
 
-
-<p>**Query image 2**</p>
-![query](assets/queries/1491.jpg)
-
+**Result image 1**
+![result1](assets/results/1498-cammixed.png)
 
 ---
 
+**Query image 2**
+![query2](assets/queries/1491.jpg)
 
-<p>**Result image 2**</p>
-![result](assets/results/1491-cammixed.png)
+---
+
+**Result image 2**
+![result2](assets/results/1491-cammixed.png)
 
 ## **Results**
 
