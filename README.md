@@ -87,8 +87,8 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 - **Install dependencies, change directory to source**:
 
 ```
-pip install requirements.txt
-cd source
+pip install -r requirements.txt
+cd source/
 ```
 
 <br/>
