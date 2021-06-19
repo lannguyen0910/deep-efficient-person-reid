@@ -64,14 +64,14 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 - Resnet50-IBN-A: [link](https://drive.google.com/file/d/162_RPNfOguXy21nrYZZSvEtex9ombYtq/view?usp=sharing)
 
 ## **Notebook**
-Notebook to train, inference and visualize: [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)][colab](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
+- Notebook to train, inference and visualize: [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)][colab](https://colab.research.google.com/drive/1a-63lIx3mIU53C8aw1SU8l_GO_cackPX?usp=sharing)
 
 ## **Setup**
-**Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
+- **Download datasets**: [Market-1501](https://drive.google.com/drive/folders/1-mmpjM3u8E5Mycdo2L4U6g_pHTpfIicf?usp=sharing) and [CUHK03](https://drive.google.com/drive/folders/1-1KfDFaZL2-I_xOOp1q3V0dkMdIcjBTS?usp=sharing)
 
 <br/>
 
-**Install dependencies, change directory to source**:
+- **Install dependencies, change directory to source**:
 
 ```
 pip install requirements.txt
@@ -80,11 +80,11 @@ cd source
 
 <br/>
 
-Modify config files in **/configs/**. You can play with the parameters for better training, testing.
+- Modify config files in **/configs/**. You can play with the parameters for better training, testing.
 
 <br/>
 
-**Training:**
+- **Training:**
 
 ```
 python train.py --config_file=name_of_config_file
@@ -93,8 +93,8 @@ Ex: python train.py --config_file=efficientnetv2_market
 
 <br />
 
-**Testing:**
-Save in **/loggers/runs**, for example the testing result from EfficientNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1CPTzKS5tUu8fbDwwbA6E9xtXjtiKw_Lk?usp=sharing)
+- **Testing:**
+Save in **/loggers/runs**, for example the result from EfficientNet-v2 (Market-1501): [link](https://drive.google.com/drive/folders/1CPTzKS5tUu8fbDwwbA6E9xtXjtiKw_Lk?usp=sharing)
 ```
 python test.py --config_file=name_of_config_file
 Ex: python test.py --config_file=efficientnetv2_market
@@ -102,8 +102,8 @@ Ex: python test.py --config_file=efficientnetv2_market
 
 <br/>
 
-**Visualization**
-Save in **/loggers/runs/results/**, for example the visualize result from EfficienNet-v2 model (Market-1501): [link](https://drive.google.com/drive/folders/1-4VRRCPlKk75nP1RVhI5itfrLbNZlPdR?usp=sharing)
+- **Visualization:**
+Save in **/loggers/runs/results/**, for example the result from EfficienNet-v2 (Market-1501): [link](https://drive.google.com/drive/folders/1-4VRRCPlKk75nP1RVhI5itfrLbNZlPdR?usp=sharing)
 ```
 python visualize.py --config_file=name_of_config_file
 Ex: python visualize.py --config_file=efficientnetv2_market
