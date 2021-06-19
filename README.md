@@ -11,15 +11,15 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 <br/>
 
 ## **Implementation Details**
-1. Random Erasing to transform input images.
-2. EfficientNet-v2 / Resnet50 / Resnet50-IBN-A as backbone. 
-3. Stride = 1 for last convolution layer. Embedding size for Resnet50 / Resnet50-IBN-A is 2048, while for EfficientNet-v2 is 1280. During inference, embedding features will run through a batch norm layer, as known as a bottleneck for better normalization.
-4. Loss function combining 3 losses:
-- (1) Triplet Loss with Hard Example Mining.
-- (2) Classification Loss (Cross Entropy) with Label Smoothing.
-- (3) Centroid Loss - Center Loss for reducing the distance of embeddings to its class center. When combining it with Classification Loss, it helps preventing embeddings from collapsing.
-5. The default optimizer is AMSgrad with base learning rate of 3.5e<sup>-4</sup> and multistep learning rate scheduler, decayed at epoch 30<sup>th</sup> and epoch 55<sup>th</sup>. Besides, we also apply mixed precision in training. 
-6. In both datasets, pretrained models were trained for 60 epochs and non-pretrained models were trained for 100 epochs.
+- Random Erasing to transform input images.
+- EfficientNet-v2 / Resnet50 / Resnet50-IBN-A as backbone. 
+- Stride = 1 for last convolution layer. Embedding size for Resnet50 / Resnet50-IBN-A is 2048, while for EfficientNet-v2 is 1280. During inference, embedding features will run through a batch norm layer, as known as a bottleneck for better normalization.
+* Loss function combining 3 losses:
+  1. Triplet Loss with Hard Example Mining.
+  2. Classification Loss (Cross Entropy) with Label Smoothing.
+  3. Centroid Loss - Center Loss for reducing the distance of embeddings to its class center. When combining it with Classification Loss, it helps preventing embeddings from collapsing.
+- The default optimizer is AMSgrad with base learning rate of 3.5e<sup>-4</sup> and multistep learning rate scheduler, decayed at epoch 30<sup>th</sup> and epoch 55<sup>th</sup>. Besides, we also apply mixed precision in training. 
+- In both datasets, pretrained models were trained for 60 epochs and non-pretrained models were trained for 100 epochs.
 
 <br/>
 
