@@ -84,11 +84,11 @@ We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using 
 
 <br/>
 
-- **Install dependencies, change directory to source**:
+- Install dependencies, change directory to **dertorch**:
 
 ```
 pip install -r requirements.txt
-cd source/
+cd dertorch/
 ```
 
 <br/>
@@ -152,28 +152,28 @@ Ex: python visualize.py --config_file=efficientnetv2_market
 
 - **Market-1501**
 
-| Models                           | Image Size | mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
-| -------------------------------- |  :---:  | :---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
-| Resnet50 (non-pretrained)        | 256x128 | 51.8  |  74.0  |  88.2  |  93.0   | [link](https://drive.google.com/drive/folders/10_2UN6bWlwFhBUYI5W4lX42WD9SXqc13?usp=sharing) |
-| EfficientNet-v2 (non-pretrained) | 256x128 | 56.5  |  78.5  |  91.1  |  94.4   | [link](https://drive.google.com/drive/folders/1ILqs0IHvpoLPqsyowsCpjFc7QnbCvaId?usp=sharing) |
-| Resnet50-IBN-A                   | 256x128 | 77.1  |  90.7  |  97.0  |  98.4   | [link](https://drive.google.com/drive/folders/1hK5J_dugnNpVDGOwyjtAlC2e9FI49IUF?usp=sharing) |
-| EfficientNet-v2                  | 256x128 | 69.7  |  87.1  |  95.3  |  97.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
-| Resnet50-IBN-A + Re-ranking      | 256x128 | 89.8  |  92.1  |  96.5  |  97.7   | [link](https://drive.google.com/drive/folders/1hK5J_dugnNpVDGOwyjtAlC2e9FI49IUF?usp=sharing) |
-| EfficientNet-v2 + Re-ranking     | 256x128 | 85.6  |  89.9  |  94.7  |  96.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
+| Models                           | Image Size |  mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
+| -------------------------------- | :--------: | :---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
+| Resnet50 (non-pretrained)        |  256x128   | 51.8  |  74.0  |  88.2  |  93.0   | [link](https://drive.google.com/drive/folders/10_2UN6bWlwFhBUYI5W4lX42WD9SXqc13?usp=sharing) |
+| EfficientNet-v2 (non-pretrained) |  256x128   | 56.5  |  78.5  |  91.1  |  94.4   | [link](https://drive.google.com/drive/folders/1ILqs0IHvpoLPqsyowsCpjFc7QnbCvaId?usp=sharing) |
+| Resnet50-IBN-A                   |  256x128   | 77.1  |  90.7  |  97.0  |  98.4   | [link](https://drive.google.com/drive/folders/1hK5J_dugnNpVDGOwyjtAlC2e9FI49IUF?usp=sharing) |
+| EfficientNet-v2                  |  256x128   | 69.7  |  87.1  |  95.3  |  97.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
+| Resnet50-IBN-A + Re-ranking      |  256x128   | 89.8  |  92.1  |  96.5  |  97.7   | [link](https://drive.google.com/drive/folders/1hK5J_dugnNpVDGOwyjtAlC2e9FI49IUF?usp=sharing) |
+| EfficientNet-v2 + Re-ranking     |  256x128   | 85.6  |  89.9  |  94.7  |  96.2   | [link](https://drive.google.com/drive/folders/12GkEksady-gFMbNtEZCoeKlMSU2N7hNb?usp=sharing) |
 
 
 ---
 
 - **CUHK03**:
 
-| Models                           | Image Size | mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
-| -------------------------------- | :---: |:---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
-| Resnet50 (non-pretrained)        | ... | ...  |  ...   |  ...   |   ...   |                                             ...                                              |
-| EfficientNet-v2 (non-pretrained) | 256x128 | 10.1  |  10.1  |  21.1  |  29.5   | [link](https://drive.google.com/drive/folders/1-VWk6zE1brYUj3T0qPe_U_UVv1YgyIhr?usp=sharing) |
-| Resnet50-IBN-A                   | 256x128 | 41.2  |  41.8  |  63.1  |  71.2   | [link](https://drive.google.com/drive/folders/1sXEDH1unesIv88Xoop-g1HjhTOmJTuXt?usp=sharing) |
-| EfficientNet-v2                  | 256x128 | 40.6  |  42.9  |  63.1  |  72.5   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
-| Resnet50-IBN-A + Re-ranking      | 256x128 | 55.6  |  51.2  |  64.0  |  72.0   | [link](https://drive.google.com/drive/folders/1sXEDH1unesIv88Xoop-g1HjhTOmJTuXt?usp=sharing) |
-| EfficientNet-v2 + Re-ranking     | 256x128 | 56.0  |  51.4  |  64.7  |  73.4   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
+| Models                           | Image Size |  mAP  | Rank-1 | Rank-5 | Rank-10 |                                           weights                                            |
+| -------------------------------- | :--------: | :---: | :----: | :----: | :-----: | :------------------------------------------------------------------------------------------: |
+| Resnet50 (non-pretrained)        |    ...     |  ...  |  ...   |  ...   |   ...   |                                             ...                                              |
+| EfficientNet-v2 (non-pretrained) |  256x128   | 10.1  |  10.1  |  21.1  |  29.5   | [link](https://drive.google.com/drive/folders/1-VWk6zE1brYUj3T0qPe_U_UVv1YgyIhr?usp=sharing) |
+| Resnet50-IBN-A                   |  256x128   | 41.2  |  41.8  |  63.1  |  71.2   | [link](https://drive.google.com/drive/folders/1sXEDH1unesIv88Xoop-g1HjhTOmJTuXt?usp=sharing) |
+| EfficientNet-v2                  |  256x128   | 40.6  |  42.9  |  63.1  |  72.5   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
+| Resnet50-IBN-A + Re-ranking      |  256x128   | 55.6  |  51.2  |  64.0  |  72.0   | [link](https://drive.google.com/drive/folders/1sXEDH1unesIv88Xoop-g1HjhTOmJTuXt?usp=sharing) |
+| EfficientNet-v2 + Re-ranking     |  256x128   | 56.0  |  51.4  |  64.7  |  73.4   | [link](https://drive.google.com/drive/folders/1FlEO5ZCnYyTtR_7Bjacia1xghjAqeuNB?usp=sharing) |
 
 ---
 
