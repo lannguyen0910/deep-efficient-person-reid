@@ -129,7 +129,7 @@ def create_supervised_evaluator(model, metrics,
     def inference(engine, batch):
         model.eval()
         with torch.no_grad():
-            data, pids, camids = batch
+            data, pids, camids, _ = batch
             data = data.to(device) if torch.cuda.device_count() >= 1 else data
             feat = model(data)
 
