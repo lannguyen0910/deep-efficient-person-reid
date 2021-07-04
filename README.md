@@ -1,5 +1,5 @@
-# **deep-efficient-person-reid**
-Experiment for an uni project with strong baseline for Person Re-identification task.
+# **deep-efficient-reid**
+Experiment for an uni project with strong baseline for Efficientnet-v2
 
 We evaluated the baseline with **Resnet50** and **Efficienet-v2** without using pretrained models. Also **Resnet50-IBN-A** and **Efficientnet-v2** using pretrained on **ImageNet**. We used two datasets: **Market-1501** and **CUHK03**.
 

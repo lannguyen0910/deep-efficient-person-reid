@@ -8,7 +8,7 @@ settings:
 
   #################   TRAINING CONFIG   ###################
 
-  model_name: "resnet50" # efficientnet_v2, resnet18, resnet34, resnet50, resnet101, resnet152
+  model_name: "resnet50_ibn_a" # efficientnet_v2, resnet18, resnet34, resnet50, resnet101, resnet152
 
   gpu_devices: "0" # supports multi-gpus
   batch_size: 32
@@ -37,7 +37,6 @@ settings:
   pretrain_choice: "self" # self, imagenet
 
   # If you want to use pretrained on ImageNet, set pretrained choice to "imagenet" and path to "r50_ibn_a"
-
 
   # Trainer
   log_period: 50
