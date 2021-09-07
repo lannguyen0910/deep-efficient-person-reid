@@ -10,3 +10,4 @@ pandas
 torch
 Pillow
 apex
+wtforms>=3.0.0a1 # not directly required, pinned by Snyk to avoid a vulnerability
