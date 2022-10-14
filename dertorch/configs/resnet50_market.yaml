@@ -10,7 +10,7 @@ settings:
 
   model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
 
-  gpu_devices: "0" # supports multi-gpus
+  gpu_devices: "2" # supports multi-gpus
   batch_size: 64
   num_workers: 2
   num_instance: 2
@@ -34,7 +34,7 @@ settings:
   last_stride: 1
   neck: "bnneck"
   pretrain_path: "weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth" # ./weights
-  pretrain_choice: "self" # self, imagenet
+  pretrain_choice: "imagenet" # self, imagenet 
 
   # Trainer
   log_period: 50
