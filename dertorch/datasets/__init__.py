@@ -1,10 +1,12 @@
 from .cuhk03 import *
 from .market import *
+from .aihub import *
 from .image_dataset import *
 
 __factory = {
     'market1501': Market1501,
     'cuhk03': CUHK03,
+    'aihub' : AIHUB,
 }
 
 
