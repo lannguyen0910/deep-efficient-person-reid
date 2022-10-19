@@ -42,13 +42,13 @@ settings:
   eval_period: 50
   output_dir: "./weights_resnet50_market_self"
   device: "cuda"
-  num_epochs: 300
+  num_epochs: 30
 
   # Test
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
   test_feat_norm: "yes" # Whether feature is nomalized before test, if yes, it is equivalent to cosine distance
-  test_reranking: "yes" # yes, no
-  test_weight: "weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth"
+  test_reranking: "no" # yes, no
+  test_weight: "/home/snu1/shared/deep-efficient-person-reid/dertorch/weights_resnet50_market_self/resnet50_ibn_a_model_25.pth"
 
   flip_feats: "off" # on, off
   log_dir: "loggers/runs/resnet50_market"

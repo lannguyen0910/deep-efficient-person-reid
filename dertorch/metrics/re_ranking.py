@@ -1,21 +1,122 @@
 import numpy as np
 import torch
+from tqdm import tqdm
+
+# from orig code
+def get_euclidean(x, y, **kwargs):
+    m = x.shape[0]
+    n = y.shape[0]
+    distmat = (
+        torch.pow(x, 2).sum(dim=1, keepdim=True).expand(m, n)
+        + torch.pow(y, 2).sum(dim=1, keepdim=True).expand(n, m).t()
+    )
+    distmat.addmm_(1, -2, x, y.t())
+    return distmat
 
 
-def re_ranking(probFea, galFea, k1, k2, lambda_value, local_distmat=None, only_local=False):
+def cosine_similarity(
+    x: torch.Tensor, y: torch.Tensor, eps: float = 1e-12
+) -> torch.Tensor:
+    """
+    Computes cosine similarity between two tensors.
+    Value == 1 means the same vector
+    Value == 0 means perpendicular vectors
+    """
+    x_n, y_n = x.norm(dim=1)[:, None], y.norm(dim=1)[:, None]
+    x_norm = x / torch.max(x_n, eps * torch.ones_like(x_n))
+    y_norm = y / torch.max(y_n, eps * torch.ones_like(y_n))
+    sim_mt = torch.mm(x_norm, y_norm.transpose(0, 1))
+    return sim_mt
+
+
+def get_cosine(x: torch.Tensor, y: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """
+    Computes cosine distance between two tensors.
+    The cosine distance is the inverse cosine similarity
+    -> cosine_distance = abs(-cosine_distance) to make it
+    similar in behaviour to euclidean distance
+    """
+    sim_mt = cosine_similarity(x, y, eps)
+    return torch.abs(1 - sim_mt).clamp(min=eps)
+
+
+def _commpute_batches_double(qf, gf, dist_func="euclidean"):
+    assert dist_func == "euclidean" or dist_func == "cosine"
+    dist_func = get_euclidean if dist_func=="euclidean" else get_cosine
+    gf_num = gf.shape[0]
+    num_batches = (gf_num // 20000) + 35
+    gf_batchsize = int((gf_num // num_batches))
+    results = []
+
+    if isinstance(qf, np.ndarray):
+        qf = torch.from_numpy(qf).float().cuda()
+
+    for i in tqdm(range(num_batches + 1)):
+        
+        gf_temp = gf[i * gf_batchsize : (i + 1) * gf_batchsize, :]
+        gf_temp = torch.from_numpy(gf_temp).float().cuda()
+
+        distmat_temp = dist_func(x=qf, y=gf_temp)
+        results.append(distmat_temp.detach().cpu().numpy())
+    
+    return np.hstack(results)
+
+def _commpute_batches_double_all(f, dist_func="euclidean"):
+    assert dist_func == "euclidean" or dist_func == "cosine"
+    dist_func = get_euclidean if dist_func=="euclidean" else get_cosine
+    f_num = f.shape[0]
+    num_batches = (f_num // 20000) + 35
+    f_batchsize = int((f_num // num_batches))
+    results = []
+
+    # if isinstance(f, np.ndarray):
+    #     f = torch.from_numpy(f).float().cuda()
+
+    for i in tqdm(range(num_batches + 1)):
+        results_column = []
+        for j in range(num_batches + 1):
+            lf_temp = f[i * f_batchsize : (i + 1) * f_batchsize, :]
+            rf_temp = f[j * f_batchsize : (j + 1) * f_batchsize, :]
+            lf_temp = lf_temp.float().cuda()
+            rf_temp = rf_temp.float().cuda()
+
+            distmat_temp = dist_func(x=lf_temp, y=rf_temp)
+            results_column.append(distmat_temp.detach().cpu().numpy())
+
+        print(np.shape(np.hstack(results_column)))
+        results.append(np.hstack(results_column))
+    print(np.shape(np.vstack(results)))
+    return np.vstack(results)
+
+
+def re_ranking(probFea, galFea, k1, k2, lambda_value, iter_batch=5000, dist_func='euclidean', local_distmat=None, only_local=False):
     # if feature vector is numpy, you should use 'torch.tensor' transform it to tensor
     query_num = probFea.size(0)
     all_num = query_num + galFea.size(0)
+    assert dist_func == "euclidean" or dist_func == "cosine"
+    dist_func = get_euclidean if dist_func=="euclidean" else get_cosine
     if only_local:
         original_dist = local_distmat
     else:
         feat = torch.cat([probFea, galFea])
         print('using GPU to compute original distance')
-        distmat = torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(all_num, all_num) + \
-            torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(
-                all_num, all_num).t()
-        distmat.addmm_(1, -2, feat, feat.t())
-        original_dist = distmat.cpu().numpy()
+        original_dist = np.zeros(shape = [all_num,all_num],dtype = np.float16)
+        i = 0
+        while True:
+            it = i + iter_batch
+            print(it, np.shape(feat)[0])
+            if it < np.shape(feat)[0]:
+                original_dist[i:it,] = np.power(dist_func(feat[i:it,],feat).detach().cpu().numpy(),2).astype(np.float16)
+            else:
+                original_dist[i:,:] = np.power(dist_func(feat[i:,],feat).detach().cpu().numpy(),2).astype(np.float16)
+                break
+            i=it
+        # distmat = _commpute_batches_double_all(feat)
+        # distmat = torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(all_num, all_num) + \
+        #     torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(
+        #         all_num, all_num).t()
+        # distmat.addmm_(1, -2, feat, feat.t())
+        # original_dist = distmat
         del feat
         if not local_distmat is None:
             original_dist = original_dist + local_distmat
@@ -25,6 +126,7 @@ def re_ranking(probFea, galFea, k1, k2, lambda_value, local_distmat=None, only_l
     initial_rank = np.argsort(original_dist).astype(np.int32)
 
     print('starting re_ranking')
+    print(all_num, initial_rank.shape, k1, k2, lambda_value)
     for i in range(all_num):
         # k-reciprocal neighbors
         forward_k_neigh_index = initial_rank[i, :k1 + 1]

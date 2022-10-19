@@ -47,12 +47,13 @@ settings:
   # Test
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
   test_feat_norm: "yes" # Whether feature is nomalized before test, if yes, it is equivalent to cosine distance
-  test_reranking: "yes" # yes, no
-  test_weight: "/home/snu1/shared/deep-efficient-person-reid/dertorch/weights_resnet50_market_self/resnet50_ibn_a_model_25.pth"
+  test_reranking: "no" # yes, no
+  test_weight: "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_aihub_self/resnet50_ibn_a_model_3.pth"
+  # "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_aihub_self/resnet50_ibn_a_model_3.pth"
 
   flip_feats: "off" # on, off
-  log_dir: "loggers/runs/resnet50_market"
-  query_dir: "market1501/query"
+  log_dir: "loggers/runs/resnet50_aihub_bymarket"
+  query_dir: "./aihub_kor_dataset/Validation/query_image"
   dist_mat: "dist_mat.npy"
   pids: "pids.npy"
   camids: "camids.npy"
