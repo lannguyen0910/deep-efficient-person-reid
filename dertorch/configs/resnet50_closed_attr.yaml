@@ -1,0 +1,81 @@
+settings:
+  #################   DATASET CONFIG   ###################
+
+  dataset_names: "closed" #['market1501', 'cuhk03']
+  root_dir: "innodep" #['market1501','cuhk03_release']
+  sampler: "softmax"
+  seed: 2021
+  closed: True
+  #################   TRAINING CONFIG   ###################
+
+  model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
+
+  gpu_devices: "2" # supports multi-gpus
+  batch_size: 64
+  num_workers: 2
+  num_instance: 2
+
+  image_size: [256, 128] # should be square to prevent bugs [512, 640, 768, 896, 1024, 1280, 1280, 1536, 1536]
+  keep_ratio: False # whether to use resize padding
+
+  mixup: True
+  label_smooth: "on"
+  margin: 0.3
+  center_loss_weight: 0.0005
+  loss_type: "triplet_center" # triplet, center, triplet_center
+  if_with_center: "no"
+
+  # Transform
+  prob: 0.5
+  padding: 10
+  re_prob: 0.5
+
+  # Backbone details
+  last_stride: 1
+  neck: "no"
+  pretrain_path: "weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth" # ./weights
+  pretrain_choice: "imagenet" # self, imagenet 
+
+  # Trainer
+  log_period: 2
+  checkpoint_period: 5
+  eval_period: 2
+  output_dir: "./weights_resnet50_closed_test"
+  device: "cuda"
+  num_epochs: 30
+
+  # Test
+  test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
+  test_feat_norm: "yes" # Whether feature is nomalized before test, if yes, it is equivalent to cosine distance
+  test_reranking: "no" # yes, no
+  test_weight: "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market_self_no/resnet50_ibn_a_model_25.pth"
+
+  flip_feats: "off" # on, off
+  log_dir: "loggers/runs/resnet50_market"
+  query_dir: "market1501/query"
+  dist_mat: "dist_mat.npy"
+  pids: "pids.npy"
+  camids: "camids.npy"
+  img_path: "imgpath.npy"
+  qfeats: "qfeats.pth" # query feats
+  gfeats: "gfeats.pth" # gallery feats
+
+  # learning rate policy
+  lr_policy:
+    name: "adam" #[adam|sgd]
+    lr: 0.00035
+    momentum: 0.937
+    weight_decay: 0.0005
+    center_lr: 0.5
+    weight_decay_bias: 0.
+    bias_lr_factor: 2
+
+  # scheduler
+  steps: [30, 55]
+  gamma: 0.1
+  warmup_factor: 0.3
+  warmup_iters: 500
+  warmup_method: "linear"
+
+  # whether to use mixed-precision
+  mixed_precision: True

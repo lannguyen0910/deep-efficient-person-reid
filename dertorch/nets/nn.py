@@ -176,7 +176,6 @@ class Backbone(nn.Module):
             self.classifier.apply(weights_init_classifier)
 
     def forward(self, x):
-
         global_feat = self.gap(self.base(x))  # (b, in_planes, 1, 1)
         global_feat = global_feat.view(
             global_feat.shape[0], -1)  # flatten to (bs, in_planes)
@@ -187,8 +186,10 @@ class Backbone(nn.Module):
             # normalize for angular softmax
             feat = self.bottleneck(global_feat)
 
+
         if self.training:
             cls_score = self.classifier(feat)
+            # hair_score = self.classifier2(feat)
             return cls_score, global_feat  # global feature for triplet loss
         else:
             if self.neck_feat == 'after':
@@ -205,4 +206,62 @@ class Backbone(nn.Module):
                 continue
             self.state_dict()[i].copy_(param_dict[i])
 
-    
+class ClosedBackbone(nn.Module):
+    """
+    Resnet and EfficientNet-v2 backbones
+    """
+
+    def __init__(self, num_classes_list, model_name, model_path="", last_stride=1, neck="no", neck_feat="after", pretrain_choice="", training=True, args=True):
+        super(ClosedBackbone, self).__init__()
+
+        if model_name == 'resnet50_ibn_a':
+            self.in_planes = 2048
+            self.base = resnet50_ibn_a(last_stride)
+
+        if pretrain_choice == 'imagenet':
+            self.base.load_param(model_path)
+            print('Loading pretrained ImageNet model......')
+
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        # self.gap = nn.AdaptiveMaxPool2d(1)
+        self.neck = neck
+        self.neck_feat = neck_feat
+        self.training = training
+        self.model_name = model_name
+
+        if self.neck == 'no':
+            self.classifiers = nn.ModuleList(
+                [nn.Linear(self.in_planes, num_classes) for num_classes in num_classes_list]
+            )
+            # self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
+            # self.classifier.apply(weights_init_classifier)
+        # elif self.neck == 'bnneck':
+        #     self.bottleneck = nn.BatchNorm1d(self.in_planes)
+        #     self.bottleneck.bias.requires_grad_(False)  # no shift
+        #     self.classifier = nn.Linear(
+        #         self.in_planes, self.num_classes, bias=False)
+
+        #     self.bottleneck.apply(weights_init_kaiming)
+        #     self.classifier.apply(weights_init_classifier)
+
+    def forward(self, x):
+        global_feat = self.gap(self.base(x))  # (b, in_planes, 1, 1)
+        global_feat = global_feat.view(
+            global_feat.shape[0], -1)  # flatten to (bs, in_planes)
+
+        if self.neck == 'no':
+            feat = global_feat
+        # elif self.neck == 'bnneck':
+        #     # normalize for angular softmax
+        #     feat = self.bottleneck(global_feat)
+
+
+        cls_scores = [classifier(feat) for classifier in self.classifiers]
+        return cls_scores, global_feat  
+        
+    def load_param(self, trained_path):
+        param_dict = torch.load(trained_path).state_dict()
+        for i in param_dict:
+            if 'classifier' in i:
+                continue
+            self.state_dict()[i].copy_(param_dict[i])

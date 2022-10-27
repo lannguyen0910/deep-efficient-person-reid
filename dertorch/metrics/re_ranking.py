@@ -14,19 +14,6 @@ def get_euclidean(x, y, **kwargs):
     return distmat
 
 
-def cosine_similarity(
-    x: torch.Tensor, y: torch.Tensor, eps: float = 1e-12
-) -> torch.Tensor:
-    """
-    Computes cosine similarity between two tensors.
-    Value == 1 means the same vector
-    Value == 0 means perpendicular vectors
-    """
-    x_n, y_n = x.norm(dim=1)[:, None], y.norm(dim=1)[:, None]
-    x_norm = x / torch.max(x_n, eps * torch.ones_like(x_n))
-    y_norm = y / torch.max(y_n, eps * torch.ones_like(y_n))
-    sim_mt = torch.mm(x_norm, y_norm.transpose(0, 1))
-    return sim_mt
 
 
 def get_cosine(x: torch.Tensor, y: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:

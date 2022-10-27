@@ -3,9 +3,16 @@ from .triplet import *
 from .arcface import *
 
 import torch.nn.functional as F
-
+import numpy as np
 
 def make_loss(config, num_classes):    # modified by gu
+
+    if config.closed:
+        # TODO: sampler / label smooth
+        def loss_func(scores, feat, targets):
+            # 0.5 : 0.5
+            return F.cross_entropy(scores[0], targets[0]) + F.cross_entropy(scores[1], targets[1])
+        return loss_func
 
     sampler = config.sampler
     if config.loss_type == 'triplet':
@@ -31,7 +38,7 @@ def make_loss(config, num_classes):    # modified by gu
                 if config.label_smooth == 'on':
                     return xent(score, target) + triplet(feat, target)[0]
                 else:
-                    return F.cross_entropy(score, target) + triplet(feat, target)[0]
+                    return F.cross_entropy(score, target) + triplet(feat, target)[0] 
             else:
                 print('expected METRIC_LOSS_TYPE should be triplet'
                       'but got {}'.format(config.loss_type))

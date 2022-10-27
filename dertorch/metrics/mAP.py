@@ -26,6 +26,32 @@ def cosine_similarity(qf, gf):
     dist_mat = np.arccos(dist_mat)
     return dist_mat
 
+
+class Accuracy(Metric):
+    def __init__(self):
+        super(Accuracy, self).__init__()
+
+    def reset(self):
+        self.scores = []
+        self.tops = []
+        self.bots = []
+
+    def update(self, output):
+        scores, tops, bots = output
+        self.scores.append(scores)
+        self.tops.extend(np.asarray(tops))
+        self.bots.extend(np.asarray(bots))
+
+    def compute(self):
+        acc_top = 0
+        acc_bot = 0
+        for i in range(len(self.scores)):
+            acc_top += (self.scores[i][0].max(1)[1] == self.tops[i]).float()
+            acc_bot += (self.scores[i][1].max(1)[1] == self.bots[i]).float()
+        acc_top = acc_top / len(self.scores)
+        acc_bot = acc_bot / len(self.scores)
+        return acc_top, acc_bot
+
 class R1_mAP(Metric):
     def __init__(self, num_query, max_rank=50, feat_norm='yes'):
         super(R1_mAP, self).__init__()

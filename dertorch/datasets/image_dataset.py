@@ -22,18 +22,29 @@ def read_image(img_path):
 class ImageDataset(Dataset):
     """Image Person ReID Dataset"""
 
-    def __init__(self, dataset, transform=None):
+    def __init__(self, dataset, transform=None, closed=False):
         self.dataset = dataset # = aihubdataset.train
         self.transform = transform # = train_transform
+        self.closed = closed
 
     def __len__(self):
         return len(self.dataset)
 
     def __getitem__(self, index):
-        img_path, pid, camid = self.dataset[index]
-        img = read_image(img_path)
- 
-        if self.transform is not None:
-            img = self.transform(img)
 
-        return img, pid, camid, img_path
+        if self.closed:
+            data_dict = self.dataset[index]
+            img = read_image(data_dict['img_path'])
+
+            if self.transform is not None:
+                img = self.transform(img)
+
+            return img, data_dict['tops_type'], data_dict['bottoms_type']
+        else:
+            img_path, pid, camid = self.dataset[index]
+            img = read_image(img_path)
+    
+            if self.transform is not None:
+                img = self.transform(img)
+
+            return img, pid, camid, img_path

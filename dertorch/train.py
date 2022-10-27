@@ -14,8 +14,9 @@ def train(config):
     # prepare dataset
     train_loader, val_loader, num_query, num_classes = get_dataset_and_dataloader(
         config)
-
+ 
     # prepare model
+    
     model = Backbone(num_classes=num_classes, model_name=config.model_name, model_path=config.pretrain_path, pretrain_choice=config.pretrain_choice).to(config.device)
 
     if config.if_with_center == 'no':
@@ -108,7 +109,10 @@ def train(config):
             config.if_with_center))
 
     torch.cuda.empty_cache()
-    del model, optimizer, scheduler, train_loader, val_loader, loss_func, optimizer_center
+    
+    if config.if_with_center == 'yes':
+        del optimizer_center
+    del model, optimizer, scheduler, train_loader, val_loader, loss_func
     gc.collect()
 
 def main():
