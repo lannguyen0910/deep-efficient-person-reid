@@ -17,7 +17,7 @@ class ClosedDataset:
 
     def __init__(self, root='innodep', verbose=True, **kwargs):
         super(ClosedDataset, self).__init__()
-        self.dataset_dir = osp.join(root, '1027_fin.pickle')
+        self.dataset_dir = osp.join(root, '1028_medium.pickle')
         self.split_dir = osp.join(root, '1027_split.pickle')
 
 
@@ -38,10 +38,12 @@ class ClosedDataset:
         #     fold_eids = []
         #     labels = [ds['']]
 
-        # now ; random split by 0-3008 (80%) 10% 10% val / test
-        train = self.data_df[self.data_df['pid'] < 3008]
-        val = self.data_df[(self.data_df['pid'] >= 3008) & (self.data_df['pid'] < 3344)]
-        test = self.data_df[self.data_df['pid'] >= 3344]
+        # now ; random split by (80%) 10% 10% / 3008 3344
+        # medium ; 3028 3281
+        quantiles = [3028, 3281]
+        train = self.data_df[self.data_df['pid'] < quantiles[0]]
+        val = self.data_df[(self.data_df['pid'] >= quantiles[0]) & (self.data_df['pid'] < quantiles[1])]
+        test = self.data_df[self.data_df['pid'] >= quantiles[1]]
 
         
         if verbose:

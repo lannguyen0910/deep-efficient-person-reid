@@ -43,13 +43,13 @@ class Accuracy(Metric):
         self.bots.extend(np.asarray(bots))
 
     def compute(self):
-        acc_top = 0
-        acc_bot = 0
+        acc_top = []
+        acc_bot = []
         for i in range(len(self.scores)):
-            acc_top += (self.scores[i][0].max(1)[1] == self.tops[i]).float()
-            acc_bot += (self.scores[i][1].max(1)[1] == self.bots[i]).float()
-        acc_top = acc_top / len(self.scores)
-        acc_bot = acc_bot / len(self.scores)
+            acc_top.append((self.scores[i][0].max(1)[1] == self.tops[i]).float().mean().cpu().detach().numpy())
+            acc_bot.append((self.scores[i][1].max(1)[1] == self.bots[i]).float().mean().cpu().detach().numpy())
+        acc_top = np.mean(acc_top)
+        acc_bot = np.mean(acc_bot)
         return acc_top, acc_bot
 
 class R1_mAP(Metric):

@@ -90,6 +90,11 @@ def train(config):
                 torch.load(path_to_optimizer_center).state_dict())
             scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
                                           config.warmup_iters, config.warmup_method, start_epoch)
+        
+        elif config.pretrain_choice == 'pretrain':
+            ckpt = torch.load(config.pretrain_path).state_dict()
+            model.load_state_dict(ckpt, strict=False)
+
 
         do_train_with_center(
             config,

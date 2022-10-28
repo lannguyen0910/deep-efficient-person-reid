@@ -233,6 +233,10 @@ class ClosedBackbone(nn.Module):
             self.classifiers = nn.ModuleList(
                 [nn.Linear(self.in_planes, num_classes) for num_classes in num_classes_list]
             )
+
+
+            for classifier in self.classifiers:
+                classifier.apply(weights_init_classifier)
             # self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
             # self.classifier.apply(weights_init_classifier)
         # elif self.neck == 'bnneck':

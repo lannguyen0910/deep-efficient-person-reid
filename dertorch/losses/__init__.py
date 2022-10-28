@@ -9,9 +9,21 @@ def make_loss(config, num_classes):    # modified by gu
 
     if config.closed:
         # TODO: sampler / label smooth
-        def loss_func(scores, feat, targets):
-            # 0.5 : 0.5
-            return F.cross_entropy(scores[0], targets[0]) + F.cross_entropy(scores[1], targets[1])
+        
+        if config.label_smooth == 'on':
+            xent_0 = CrossEntropyLabelSmooth(
+                num_classes=num_classes[0])     # new add by luo
+            xent_1 = CrossEntropyLabelSmooth(
+                num_classes=num_classes[1]) 
+            print("label smooth on, numclasses:", num_classes)
+            def loss_func(scores, feat, targets):
+                # 0.5 : 0.5
+                return xent_0(scores[0], targets[0]) + xent_1(scores[1], targets[1])
+        
+        else:
+            def loss_func(scores, feat, targets):
+                # 0.5 : 0.5
+                return F.cross_entropy(scores[0], targets[0]) + F.cross_entropy(scores[1], targets[1])
         return loss_func
 
     sampler = config.sampler

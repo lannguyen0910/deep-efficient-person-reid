@@ -5,12 +5,12 @@ settings:
   root_dir: "market1501" #['market1501','cuhk03_release']
   sampler: "softmax"
   seed: 2021
-
+  closed: False
   #################   TRAINING CONFIG   ###################
 
   model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
 
-  gpu_devices: "2" # supports multi-gpus
+  gpu_devices: "1" # supports multi-gpus
   batch_size: 64
   num_workers: 2
   num_instance: 2
@@ -33,14 +33,14 @@ settings:
   # Backbone details
   last_stride: 1
   neck: "bnneck"
-  pretrain_path: "weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth" # ./weights
-  pretrain_choice: "imagenet" # self, imagenet 
+  pretrain_path: /home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth # ./weights
+  pretrain_choice: "imagenet" # self, imagenet, pretrain
 
   # Trainer
   log_period: 50
-  checkpoint_period: 25
-  eval_period: 50
-  output_dir: "./weights_resnet50_market_self"
+  checkpoint_period: 5
+  eval_period: 5
+  output_dir: "./weights_resnet50_market_norr"
   device: "cuda"
   num_epochs: 30
 
@@ -48,7 +48,7 @@ settings:
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
   test_feat_norm: "yes" # Whether feature is nomalized before test, if yes, it is equivalent to cosine distance
   test_reranking: "no" # yes, no
-  test_weight: "/home/snu1/shared/deep-efficient-person-reid/dertorch/weights_resnet50_market_self/resnet50_ibn_a_model_25.pth"
+  test_weight: "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market_self_no/resnet50_ibn_a_model_25.pth"
 
   flip_feats: "off" # on, off
   log_dir: "loggers/runs/resnet50_market"

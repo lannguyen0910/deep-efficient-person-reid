@@ -10,8 +10,8 @@ settings:
 
   model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
 
-  gpu_devices: "2" # supports multi-gpus
-  batch_size: 64
+  gpu_devices: "2, 3" # supports multi-gpus
+  batch_size: 200
   num_workers: 2
   num_instance: 2
 
@@ -37,12 +37,12 @@ settings:
   pretrain_choice: "imagenet" # self, imagenet 
 
   # Trainer
-  log_period: 2
-  checkpoint_period: 5
-  eval_period: 2
-  output_dir: "./weights_resnet50_closed_test"
+  log_period: 10
+  checkpoint_period: 1
+  eval_period: 1
+  output_dir: "./weights_resnet50_closed_medium"
   device: "cuda"
-  num_epochs: 30
+  num_epochs: 20
 
   # Test
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
