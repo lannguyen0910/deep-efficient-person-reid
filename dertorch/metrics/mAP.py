@@ -3,7 +3,9 @@ import torch
 from ignite.metrics import Metric
 
 from .eval_reid import eval_func
-from .re_ranking import re_ranking
+# from .re_ranking import re_ranking
+from .re_ranking_revised import re_ranking
+
 
 def euclidean_distance(qf, gf):
     m = qf.shape[0]
