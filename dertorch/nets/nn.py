@@ -25,7 +25,7 @@ def weights_init_classifier(m):
     classname = m.__class__.__name__
     if classname.find('Linear') != -1:
         nn.init.normal_(m.weight, std=0.001)
-        if m.bias:
+        if m.bias is not None:
             nn.init.constant_(m.bias, 0.0)
 
 class EfficientNet(torch.nn.Module):
@@ -239,14 +239,18 @@ class ClosedBackbone(nn.Module):
                 classifier.apply(weights_init_classifier)
             # self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
             # self.classifier.apply(weights_init_classifier)
-        # elif self.neck == 'bnneck':
-        #     self.bottleneck = nn.BatchNorm1d(self.in_planes)
-        #     self.bottleneck.bias.requires_grad_(False)  # no shift
-        #     self.classifier = nn.Linear(
-        #         self.in_planes, self.num_classes, bias=False)
+        elif self.neck == 'bnneck':
+            self.bottleneck = nn.BatchNorm1d(self.in_planes)
+            self.bottleneck.bias.requires_grad_(False)  # no shift
+            self.classifiers = nn.ModuleList(
+                [nn.Linear(self.in_planes, num_classes, bias=False) for num_classes in num_classes_list]
+            )
 
-        #     self.bottleneck.apply(weights_init_kaiming)
-        #     self.classifier.apply(weights_init_classifier)
+
+            for classifier in self.classifiers:
+                classifier.apply(weights_init_classifier)
+
+            self.bottleneck.apply(weights_init_kaiming)
 
     def forward(self, x):
         global_feat = self.gap(self.base(x))  # (b, in_planes, 1, 1)
@@ -255,9 +259,9 @@ class ClosedBackbone(nn.Module):
 
         if self.neck == 'no':
             feat = global_feat
-        # elif self.neck == 'bnneck':
-        #     # normalize for angular softmax
-        #     feat = self.bottleneck(global_feat)
+        elif self.neck == 'bnneck':
+            # normalize for angular softmax
+            feat = self.bottleneck(global_feat)
 
 
         cls_scores = [classifier(feat) for classifier in self.classifiers]

@@ -178,7 +178,11 @@ def get_dataset_and_dataloader(config):
 
     if config.closed:
         train_loader = DataLoader(
-            train_set, batch_size=config.batch_size, shuffle=True, num_workers=config.num_workers, collate_fn=train_close_collate_fn)
+            train_set, batch_size=config.batch_size, 
+            # sampler=RandomIdentitySampler(
+            #     dataset.train, config.batch_size, config.num_instance),
+            shuffle=True, 
+            num_workers=config.num_workers, collate_fn=train_close_collate_fn)
         
         val_set = ImageDataset(dataset.val, val_transforms, config.closed)
         val_loader = DataLoader(

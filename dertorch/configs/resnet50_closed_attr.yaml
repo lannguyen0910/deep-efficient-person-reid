@@ -5,13 +5,23 @@ settings:
   root_dir: "innodep" #['market1501','cuhk03_release']
   sampler: "softmax"
   seed: 2021
+  
+  
   closed: True
+  num_classes: 2545
+  top_type: 17
+  bot_type: 8
+  num_query: 2167
+  # top_type 17 , bot_type 8, pid 2545
+  # 2545, 17, 8, 2167
+  # 751, 9, 10, 3368
+
   #################   TRAINING CONFIG   ###################
 
   model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
 
-  gpu_devices: "2, 3" # supports multi-gpus
-  batch_size: 200
+  gpu_devices: "3" # supports multi-gpus
+  batch_size: 32
   num_workers: 2
   num_instance: 2
 
@@ -23,7 +33,7 @@ settings:
   margin: 0.3
   center_loss_weight: 0.0005
   loss_type: "triplet_center" # triplet, center, triplet_center
-  if_with_center: "no"
+  if_with_center: "yes"
 
   # Transform
   prob: 0.5
@@ -32,17 +42,17 @@ settings:
 
   # Backbone details
   last_stride: 1
-  neck: "no"
+  neck: "bnneck"
   pretrain_path: "weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth" # ./weights
   pretrain_choice: "imagenet" # self, imagenet 
 
   # Trainer
-  log_period: 10
-  checkpoint_period: 1
-  eval_period: 1
-  output_dir: "./weights_resnet50_closed_medium"
+  log_period: 300
+  checkpoint_period: 5
+  eval_period: 5
+  output_dir: "./weights_resnet50_closed_with_innodep_1119_noattr"
   device: "cuda"
-  num_epochs: 20
+  num_epochs: 200
 
   # Test
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'

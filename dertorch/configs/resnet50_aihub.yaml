@@ -40,7 +40,7 @@ settings:
   log_period: 1
   checkpoint_period: 1
   eval_period: 1
-  output_dir: "./weights_resnet50_aihub_norr"
+  output_dir: "./weights_resnet50_aihub_closed_innodep2_15_100_1120"
   device: "cuda"
   num_epochs: 5
 
@@ -48,7 +48,7 @@ settings:
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
   test_feat_norm: "yes" # Whether feature is nomalized before test, if yes, it is equivalent to cosine distance
   test_reranking: "no" # yes, no
-  test_weight: "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market_norr/resnet50_ibn_a_model_25.pth"
+  test_weight: "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market_1120_innodep_15/resnet50_ibn_a_model_100.pth"
   # "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_aihub_self/resnet50_ibn_a_model_3.pth"
   # "/home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_aihub_self/resnet50_ibn_a_model_3.pth"
 

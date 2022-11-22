@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
+def eval_func(distmat, q_pids, g_pids, q_camids=None, g_camids=None, max_rank=50):
     """Evaluation with market1501 metric
         Key: for each query identity, its gallery images from the same camera view are discarded.
         """
@@ -21,16 +21,21 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
     for q_idx in tqdm(range(num_q)):
         # get query pid and camid
         q_pid = q_pids[q_idx]
-        q_camid = q_camids[q_idx]
+        if q_camids is not None:
+            q_camid = q_camids[q_idx]
 
-        # remove gallery samples that have the same pid and camid with query
-        order = indices[q_idx]
-        remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
-        keep = np.invert(remove)
+            # remove gallery samples that have the same pid and camid with query
+            order = indices[q_idx]
+            remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
+            keep = np.invert(remove)
 
-        # compute cmc curve
-        # binary vector, positions with value 1 are correct matches
-        orig_cmc = matches[q_idx][keep]
+            # compute cmc curve
+            # binary vector, positions with value 1 are correct matches
+            orig_cmc = matches[q_idx][keep]
+        else:
+            orig_cmc = matches[q_idx]
+
+
         if not np.any(orig_cmc):
             # this condition is true when query identity does not appear in gallery
             continue

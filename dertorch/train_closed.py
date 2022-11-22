@@ -14,41 +14,71 @@ def train(config):
     # prepare dataset
     train_loader, val_loader, _, _ = get_dataset_and_dataloader(
         config)
- 
+    num_query = config.num_query
     # prepare model
-    num_classes_list = [17, 8]
+    # top_type 17 , bot_type 8, pid 2545
+
+    # market
+    # top_type 9, bot_type 10, pid 751
+    num_classes_list = [config.num_classes, config.top_type, config.bot_type]
     model = ClosedBackbone(num_classes_list=num_classes_list, model_name=config.model_name, model_path=config.pretrain_path, pretrain_choice=config.pretrain_choice).to(config.device)
 
-    optimizer = get_lr_policy(config.lr_policy, model)
-    scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
-                                    config.warmup_iters, config.warmup_method)
-    loss_func = make_loss(config, num_classes_list)
 
-    start_epoch = 0
 
-    # Add for using self trained model
-    # if config.pretrain_choice == 'self':
-    #     start_epoch = eval(config.pretrain_path.split(
-    #         '/')[-1].split('.')[0].split('_')[-1])
-    #     print('Start epoch:', start_epoch)
-    #     path_to_optimizer = config.pretrain_path.replace(
-    #         'model', 'optimizer')
-    #     print('Path to the checkpoint of optimizer:', path_to_optimizer)
-    #     model.load_state_dict(torch.load(config.pretrain_path).state_dict())
-    #     optimizer.load_state_dict(torch.load(path_to_optimizer).state_dict())
-    #     scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
-    #                                     config.warmup_iters, config.warmup_method, start_epoch)
+    if config.if_with_center == 'no':
+        optimizer = get_lr_policy(config.lr_policy, model)
+        scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
+                                        config.warmup_iters, config.warmup_method)
+        loss_func = make_loss_closed(config, num_classes_list)
 
-    do_train_closed(
-        config,
-        model,
-        train_loader,
-        val_loader,
-        optimizer,
-        scheduler,      # modify for using self trained model
-        loss_func,
-        start_epoch     # add for using self trained model
-    )            
+        start_epoch = 0
+
+        # Add for using self trained model
+        # if config.pretrain_choice == 'self':
+        #     start_epoch = eval(config.pretrain_path.split(
+        #         '/')[-1].split('.')[0].split('_')[-1])
+        #     print('Start epoch:', start_epoch)
+        #     path_to_optimizer = config.pretrain_path.replace(
+        #         'model', 'optimizer')
+        #     print('Path to the checkpoint of optimizer:', path_to_optimizer)
+        #     model.load_state_dict(torch.load(config.pretrain_path).state_dict())
+        #     optimizer.load_state_dict(torch.load(path_to_optimizer).state_dict())
+        #     scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
+        #                                     config.warmup_iters, config.warmup_method, start_epoch)
+
+
+        do_train_closed(
+            config,
+            model,
+            train_loader,
+            val_loader,
+            optimizer,
+            scheduler,      # modify for using self trained model
+            loss_func,
+            num_query,
+            start_epoch     # add for using self trained model
+        )            
+    else:
+        loss_func, center_criterion = make_loss_closed(config, num_classes_list)
+        optimizer, optimizer_center = get_lr_policy_with_center(
+            config.lr_policy, model, center_criterion)
+        scheduler = WarmupMultiStepLR(optimizer, config.steps, config.gamma, config.warmup_factor,
+                                      config.warmup_iters, config.warmup_method)
+        start_epoch = 0
+
+        do_train_closed_with_center(
+            config,
+            model,
+            center_criterion,
+            train_loader,
+            val_loader,
+            optimizer,
+            optimizer_center,
+            scheduler,      # modify for using self trained model
+            loss_func,
+            num_query,
+            start_epoch     # add for using self trained model
+        )       
 
     torch.cuda.empty_cache()
     

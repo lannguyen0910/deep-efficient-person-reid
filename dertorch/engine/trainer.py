@@ -20,15 +20,17 @@ def create_supervised_closed_trainer(config, model, optimizer, loss_fn,
 
     def _update(engine, batch):
         model.train()
-        img, top, bot = batch
+        img, pid, top, bot = batch
         img = img.to(device) if torch.cuda.device_count() >= 1 else img
         # TODO: handle dynamic multi target
+        pid = pid.to( 
+            device) if torch.cuda.device_count() >= 1 else pid
         top = top.to( 
             device) if torch.cuda.device_count() >= 1 else top
         bot = bot.to( 
             device) if torch.cuda.device_count() >= 1 else bot
         
-        targets = (top, bot)
+        targets = (pid, top, bot)
         scores, feat = model(img)   
 
         with torch.cuda.amp.autocast(enabled=config.mixed_precision):
@@ -46,12 +48,67 @@ def create_supervised_closed_trainer(config, model, optimizer, loss_fn,
             optimizer.step()
 
         # compute acc
-        acc_top = (scores[0].max(1)[1] == targets[0]).float().mean()
-        acc_bot = (scores[1].max(1)[1] == targets[1]).float().mean()
-        acc_mean = (acc_top + acc_bot) / 2
-        return loss.item(), acc_mean.item()
+        acc_pid = (scores[0].max(1)[1] == targets[0]).float().mean()
+        acc_top = (scores[1].max(1)[1] == targets[1]).float().mean()
+        acc_bot = (scores[2].max(1)[1] == targets[2]).float().mean()
+        acc_mean = (acc_pid + acc_top + acc_bot) / 3
+        return loss.item(), acc_mean.item(), acc_pid.item(), acc_top.item(), acc_bot.item()
 
     return Engine(_update)       
+
+
+def create_supervised_closed_trainer_with_center(config, model, center_criterion, optimizer, optimizer_center, loss_fn, center_loss_weight, 
+                              device=None):
+    if device:
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+        model.to(device)    
+
+    def _update(engine, batch):
+        model.train()
+        img, pid, top, bot = batch
+        img = img.to(device) if torch.cuda.device_count() >= 1 else img
+        # TODO: handle dynamic multi target
+        pid = pid.to( 
+            device) if torch.cuda.device_count() >= 1 else pid
+        top = top.to( 
+            device) if torch.cuda.device_count() >= 1 else top
+        bot = bot.to( 
+            device) if torch.cuda.device_count() >= 1 else bot
+        
+        targets = (pid, top, bot)
+        scores, feat = model(img)   
+
+        with torch.cuda.amp.autocast(enabled=config.mixed_precision):
+            amp_scale = torch.cuda.amp.GradScaler()
+            loss = loss_fn(scores, feat, targets)  
+
+        if config.mixed_precision:
+            optimizer.zero_grad()
+            amp_scale.scale(loss).backward()
+            amp_scale.step(optimizer)
+
+        else:
+            loss.backward()
+            optimizer.step()
+
+        for param in center_criterion.parameters():
+            param.grad.data *= (1. / center_loss_weight)
+
+        if config.mixed_precision:
+            amp_scale.step(optimizer_center)
+            amp_scale.update()
+        else:
+            optimizer_center.step()
+
+        # compute acc
+        acc_pid = (scores[0].max(1)[1] == targets[0]).float().mean()
+        acc_top = (scores[1].max(1)[1] == targets[1]).float().mean()
+        acc_bot = (scores[2].max(1)[1] == targets[2]).float().mean()
+        acc_mean = (acc_pid + acc_top + acc_bot) / 3
+        return loss.item(), acc_mean.item(), acc_pid.item(), acc_top.item(), acc_bot.item()
+
+    return Engine(_update)  
 
 
 def create_supervised_trainer(config, model, optimizer, loss_fn,
@@ -161,11 +218,10 @@ def create_supervised_closed_evaluator(model, metrics,
     def inference(engine, batch):
         model.eval()
         with torch.no_grad():
-            data, tops, bots = batch
+            data, pids, tops, bots = batch
             data = data.to(device) if torch.cuda.device_count() >= 1 else data
             scores, feat = model(data)
-
-            return scores, tops, bots
+            return scores, feat, pids, tops, bots
 
     engine = Engine(inference)
 
@@ -215,6 +271,7 @@ def do_train_closed(
         optimizer,
         scheduler,
         loss_fn,
+        num_query,
         start_epoch
 ):
     log_period = config.log_period
@@ -229,9 +286,10 @@ def do_train_closed(
     trainer = create_supervised_closed_trainer(
         config, model, optimizer, loss_fn, device=device)
     #TODO : acc
-    evaluator = create_supervised_closed_evaluator(model, metrics={'acc': Accuracy()}, device=device)
+    evaluator = create_supervised_closed_evaluator(model, metrics={'acc': Accuracy(
+        num_query, max_rank=50, feat_norm=config.test_feat_norm)}, device=device)
     checkpointer = ModelCheckpoint(
-        output_dir, config.model_name, checkpoint_period, n_saved=10, require_empty=False)
+        output_dir, config.model_name, checkpoint_period, n_saved=50, require_empty=False)
     timer = Timer(average=True)
 
     
@@ -243,6 +301,9 @@ def do_train_closed(
     # average metric to attach on trainer
     RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
     RunningAverage(output_transform=lambda x: x[1]).attach(trainer, 'avg_acc')
+    RunningAverage(output_transform=lambda x: x[2]).attach(trainer, 'pid_acc')
+    RunningAverage(output_transform=lambda x: x[3]).attach(trainer, 'top_acc')
+    RunningAverage(output_transform=lambda x: x[4]).attach(trainer, 'bot_acc')
 
     @trainer.on(Events.STARTED)
     def start_training(engine):
@@ -258,9 +319,9 @@ def do_train_closed(
         ITER += 1
 
         if ITER % log_period == 0:
-            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Acc: {:.3f}, Base Lr: {:.2e}"
+            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, mean_Acc: {:.3f}, pid_Acc: {:.3f}, top_Acc: {:.3f}, bot_Acc: {:.3f}, Base Lr: {:.2e}"
                         .format(engine.state.epoch, ITER, len(train_loader),
-                                engine.state.metrics['avg_loss'], engine.state.metrics['avg_acc'],
+                                engine.state.metrics['avg_loss'], engine.state.metrics['avg_acc'], engine.state.metrics['pid_acc'],engine.state.metrics['top_acc'],engine.state.metrics['bot_acc'],
                                 scheduler.get_lr()[0]))
         if len(train_loader) == ITER:
             ITER = 0
@@ -279,13 +340,109 @@ def do_train_closed(
         if engine.state.epoch % eval_period == 0:
             print('Trainer eval')
             evaluator.run(val_loader)
-            acc_top, acc_bot = evaluator.state.metrics['acc']
+            cmc, mAP, acc_top, acc_bot = evaluator.state.metrics['acc']
             logger.info(
                 "Validation Results - Epoch: {}".format(engine.state.epoch))
+            logger.info("mAP: {:.1%}".format(mAP))
+            for r in [1, 5, 10]:
+                logger.info(
+                    "CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
             logger.info(
                 "acc_top: {:.3f}, acc_bot: {:.3f}".format(acc_top, acc_bot))
 
     trainer.run(train_loader, max_epochs=epochs)
+
+def do_train_closed_with_center(
+        config,
+        model,
+        center_criterion,#
+        train_loader,
+        val_loader,
+        optimizer,
+        optimizer_center,#
+        scheduler,
+        loss_fn,
+        num_query,
+        start_epoch
+):
+    log_period = config.log_period
+    checkpoint_period = config.checkpoint_period
+    eval_period = config.eval_period
+    output_dir = config.output_dir
+    device = config.device
+    epochs = config.num_epochs
+    
+    logger = logging.getLogger("closed_baseline.train")
+    logger.info("Start training")
+    trainer = create_supervised_closed_trainer_with_center(
+        config, model, center_criterion, optimizer, optimizer_center, loss_fn, config.center_loss_weight, device=device)
+    #TODO : acc
+    evaluator = create_supervised_closed_evaluator(model, metrics={'acc': Accuracy(
+        num_query, max_rank=50, feat_norm=config.test_feat_norm)}, device=device)
+    checkpointer = ModelCheckpoint(
+        output_dir, config.model_name, checkpoint_period, n_saved=50, require_empty=False)
+    timer = Timer(average=True)
+
+    
+    trainer.add_event_handler(Events.EPOCH_COMPLETED, checkpointer, {'model': model,
+                                                                     'optimizer': optimizer})
+    timer.attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
+                 pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
+
+    # average metric to attach on trainer
+    RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
+    RunningAverage(output_transform=lambda x: x[1]).attach(trainer, 'avg_acc')
+    RunningAverage(output_transform=lambda x: x[2]).attach(trainer, 'pid_acc')
+    RunningAverage(output_transform=lambda x: x[3]).attach(trainer, 'top_acc')
+    RunningAverage(output_transform=lambda x: x[4]).attach(trainer, 'bot_acc')
+
+    @trainer.on(Events.STARTED)
+    def start_training(engine):
+        engine.state.epoch = start_epoch
+
+    @trainer.on(Events.EPOCH_STARTED)
+    def adjust_learning_rate(engine):
+        scheduler.step()
+
+    @trainer.on(Events.ITERATION_COMPLETED)
+    def log_training_loss(engine):
+        global ITER
+        ITER += 1
+
+        if ITER % log_period == 0:
+            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, mean_Acc: {:.3f}, pid_Acc: {:.3f}, top_Acc: {:.3f}, bot_Acc: {:.3f}, Base Lr: {:.2e}"
+                        .format(engine.state.epoch, ITER, len(train_loader),
+                                engine.state.metrics['avg_loss'], engine.state.metrics['avg_acc'], engine.state.metrics['pid_acc'],engine.state.metrics['top_acc'],engine.state.metrics['bot_acc'],
+                                scheduler.get_lr()[0]))
+        if len(train_loader) == ITER:
+            ITER = 0
+
+    # adding handlers using `trainer.on` decorator API
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def print_times(engine):
+        logger.info('Epoch {} done. Time per batch: {:.3f}[s] Speed: {:.1f}[samples/s]'
+                    .format(engine.state.epoch, timer.value() * timer.step_count,
+                            train_loader.batch_size / timer.value()))
+        logger.info('-' * 10)
+        timer.reset()
+
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def log_validation_results(engine):
+        if engine.state.epoch % eval_period == 0:
+            print('Trainer eval')
+            evaluator.run(val_loader)
+            cmc, mAP, acc_top, acc_bot = evaluator.state.metrics['acc']
+            logger.info(
+                "Validation Results - Epoch: {}".format(engine.state.epoch))
+            logger.info("mAP: {:.1%}".format(mAP))
+            for r in [1, 5, 10]:
+                logger.info(
+                    "CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
+            logger.info(
+                "acc_top: {:.3f}, acc_bot: {:.3f}".format(acc_top, acc_bot))
+
+    trainer.run(train_loader, max_epochs=epochs)
+
 
 def do_train(
         config,

@@ -10,7 +10,7 @@ settings:
 
   model_name: "resnet50_ibn_a" #[resnet50_ibn_a, resnet50]
 
-  gpu_devices: "1" # supports multi-gpus
+  gpu_devices: "3" # supports multi-gpus
   batch_size: 64
   num_workers: 2
   num_instance: 2
@@ -33,16 +33,16 @@ settings:
   # Backbone details
   last_stride: 1
   neck: "bnneck"
-  pretrain_path: /home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_market/weights-resnet50-market/resnet50_ibn_a_model_60.pth # ./weights
-  pretrain_choice: "imagenet" # self, imagenet, pretrain
+  pretrain_path: /home/snu1/dongseok/deep-efficient-person-reid/dertorch/weights_resnet50_closed_with_innodep_1119_noattr/resnet50_ibn_a_model_15.pth # ./weights
+  pretrain_choice: "pretrain" # self, imagenet, pretrain
 
   # Trainer
   log_period: 50
   checkpoint_period: 5
   eval_period: 5
-  output_dir: "./weights_resnet50_market_norr"
+  output_dir: "./weights_resnet50_market_1120_innodep_15"
   device: "cuda"
-  num_epochs: 30
+  num_epochs: 100
 
   # Test
   test_neck_feat: "after" # Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'

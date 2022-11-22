@@ -17,11 +17,18 @@ class ClosedDataset:
 
     def __init__(self, root='innodep', verbose=True, **kwargs):
         super(ClosedDataset, self).__init__()
-        self.dataset_dir = osp.join(root, '1028_medium.pickle')
+        # self.dataset_dir = osp.join(root, '1105_medium_relabel.pickle')
+
+        self.train_dir = osp.join(root, '1117_train_relabel.pickle')
+        self.val_dir = osp.join(root, '1117_val.pickle')
+
         self.split_dir = osp.join(root, '1027_split.pickle')
 
 
-        self.data_df = pd.read_pickle(self.dataset_dir)
+        # self.data_df = pd.read_pickle(self.dataset_dir)
+
+        self.train_df = pd.read_pickle(self.train_dir)
+        self.val_df = pd.read_pickle(self.val_dir)
 
         
         # TODO ; split pids with balanced
@@ -40,24 +47,27 @@ class ClosedDataset:
 
         # now ; random split by (80%) 10% 10% / 3008 3344
         # medium ; 3028 3281
-        quantiles = [3028, 3281]
-        train = self.data_df[self.data_df['pid'] < quantiles[0]]
-        val = self.data_df[(self.data_df['pid'] >= quantiles[0]) & (self.data_df['pid'] < quantiles[1])]
-        test = self.data_df[self.data_df['pid'] >= quantiles[1]]
+        # medium_relabel ; 657, 713
+        # quantiles = [657, 713]
+        # data_df = self.data_df.sample(frac=1)
+        # print(data_df)
+        # train = data_df[: int(len(data_df)*0.9)]
+        # val = data_df[int(len(data_df)*0.9):]
+        # test = data_df[int(len(data_df)*0.9): ]
 
         
         if verbose:
             print("=> closed dataset loaded")
 
-        self.train = train.set_index(pd.Index(list(range(len(train))))).to_dict(
+        self.train = self.train_df.set_index(pd.Index(list(range(len(self.train_df))))).to_dict(
             "index"
         )
-        self.val = val.set_index(pd.Index(list(range(len(val))))).to_dict(
+        self.val = self.val_df.set_index(pd.Index(list(range(len(self.val_df))))).to_dict(
             "index"
         )
-        self.test = test.set_index(pd.Index(list(range(len(test))))).to_dict(
-            "index"
-        )
+        # self.test = test.set_index(pd.Index(list(range(len(test))))).to_dict(
+        #     "index"
+        # )
 
         # self.num_train_pids, self.num_train_imgs, self.num_train_cams = self.get_imagedata_info(
         #     self.train)
