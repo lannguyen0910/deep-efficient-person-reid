@@ -1,4 +1,4 @@
-scipy==1.2.0
+scipy==1.10.0rc1
 pytorch-ignite==0.1.2
 PyYAML
 albumentations
